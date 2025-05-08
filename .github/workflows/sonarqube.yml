@@ -8,26 +8,32 @@ on:
 
 jobs:
   sonarqube:
-    runs-on: self-hosted
+    runs-on: self-hosted  # Use your self-hosted runner or a GitHub runner
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Step 2: Set up Node.js (use version 18)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
+      # Step 3: Install dependencies
       - name: Install Dependencies
         run: npm install
 
+      # Step 4: Run Jest Tests with Coverage
       - name: Run Jest Tests with Coverage
-        run: npm run test -- --coverage --coverageReporters=lcov
+        run: ./node_modules/.bin/jest --coverage --coverageReporters=lcov
 
+      # Step 5: Install SonarQube Scanner
       - name: Install SonarQube Scanner
         run: npm install -g sonarqube-scanner
 
+      # Step 6: Run SonarQube Scanner
       - name: Run SonarQube Scanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
