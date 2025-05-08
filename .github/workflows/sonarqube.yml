@@ -8,27 +8,37 @@ on:
 
 jobs:
   sonarqube:
-    runs-on: self-hosted  # Use the self-hosted runner
+    runs-on: self-hosted  # Use your self-hosted runner or a GitHub runner
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Step 2: Set up Node.js (use version 18)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Adjust according to your project
+          node-version: '18'
 
+      # Step 3: Install dependencies
       - name: Install Dependencies
         run: npm install
 
-      - name: Run Tests with Coverage
-        run: jest --coverage --coverageReporters=lcov  # Ensure Jest generates the coverage report
+      # Step 4: Fix Permissions for Jest Binary
+      - name: Fix Permissions for Jest
+        run: chmod +x ./node_modules/.bin/jest
 
-      - name: Install SonarScanner
+      # Step 5: Run Jest Tests with Coverage
+      - name: Run Jest Tests with Coverage
+        run: ./node_modules/.bin/jest --coverage --coverageReporters=lcov
+
+      # Step 6: Install SonarQube Scanner
+      - name: Install SonarQube Scanner
         run: npm install -g sonarqube-scanner
 
-      - name: Run SonarQube Scan
+      # Step 7: Run SonarQube Scanner
+      - name: Run SonarQube Scanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -38,6 +48,5 @@ jobs:
             -Dsonar.sources=src \
             -Dsonar.tests=tests \
             -Dsonar.exclusions=node_modules/**,bower_components/**,jspm_packages/**,typings/**,lib-cov/** \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov-report/index-lcov-report.lcov \
             -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.token=$SONAR_TOKEN
