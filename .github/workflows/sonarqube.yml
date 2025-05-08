@@ -1,54 +1,27 @@
-name: SonarQube Code Scan
+name: Sonar run
 
 on:
   push:
     branches:
       - main
-      - master
+
 
 jobs:
-  sonarqube:
-    runs-on: self-hosted  # Or 'ubuntu-latest' if using GitHub-hosted runners
-
+  build:
+    name: Build and analyze
+    runs-on: self-hosted
+    
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      # Step 2: Set up Node.js (version 18)
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
         with:
-          node-version: '18'
-
-      # Step 3: Install project dependencies
-      - name: Install Dependencies
-        run: npm install
-
-      # Step 4: Run Jest Tests with Coverage
-      - name: Run Jest Tests with Coverage
-        run: npm run test
-
-      # Optional Debug Step: Show the generated lcov file
-      - name: Debug Coverage File
-        run: |
-         echo "Listing coverage directory"
-         ls -lh coverage
-         echo "Showing first 20 lines of lcov.info"
-         cat coverage/lcov.info | head -n 20
-
-
-      # Step 5: Run SonarQube Scanner
-      - name: Run SonarQube Scanner
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=sonar-teams-alert \
-            -Dsonar.sources=src \
-            -Dsonar.tests=tests \
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-            -Dsonar.exclusions=node_modules/**,bower_components/**,jspm_packages/**,typings/**,lib-cov/** \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.token=$SONAR_TOKEN
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      # - uses: SonarSource/sonarqube-quality-gate-action@v1
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
