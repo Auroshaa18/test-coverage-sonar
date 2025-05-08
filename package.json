@@ -6,7 +6,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest --coverage --coverageReporters=lcov"
+    "test": "./node_modules/.bin/jest --coverage --coverageReporters=lcov"
   },
   "repository": {
     "type": "git",
