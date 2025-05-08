@@ -1,27 +1,33 @@
-name: SonarQube Analysis
+name: SonarQube Code Scan
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches:
+      - main
+      - master
 
 jobs:
   sonarqube:
-    runs-on: ubuntu-latest  # Use self-hosted if SonarQube is not public
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          node-version: '18'
 
-      - name: SonarQube Scan
+      - name: Install SonarScanner
+        run: npm install -g sonarqube-scanner
+
+      - name: Run SonarQube Scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ./gradlew sonarqube \
+          sonar-scanner \
             -Dsonar.projectKey=sonar-teams-alert \
+            -Dsonar.sources=. \
             -Dsonar.host.url=http://10.60.8.221:9000 \
             -Dsonar.login=$SONAR_TOKEN
