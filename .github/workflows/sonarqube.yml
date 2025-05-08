@@ -25,6 +25,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+<<<<<<< HEAD
       # Step 4: Fix Permissions for Jest Binary
       - name: Fix Permissions for Jest
         run: chmod +x ./node_modules/.bin/jest
@@ -38,6 +39,17 @@ jobs:
         run: npm install -g sonarqube-scanner
 
       # Step 7: Run SonarQube Scanner
+=======
+      # Step 4: Run Jest Tests with Coverage
+      - name: Run Jest Tests with Coverage
+        run: ./node_modules/.bin/jest --coverage --coverageReporters=lcov
+
+      # Step 5: Install SonarQube Scanner
+      - name: Install SonarQube Scanner
+        run: npm install -g sonarqube-scanner
+
+      # Step 6: Run SonarQube Scanner
+>>>>>>> 0ae70f17cccf8200bccf64cc3c57915b63459102
       - name: Run SonarQube Scanner
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
