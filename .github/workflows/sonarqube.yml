@@ -32,10 +32,11 @@ jobs:
       # Optional Debug Step: Show the generated lcov file
       - name: Debug Coverage File
         run: |
-          echo "Checking coverage directory:"
-          ls -lh coverage
-          echo "First 10 lines of lcov.info:"
-          head -n 10 coverage/lcov.info
+         echo "Listing coverage directory"
+         ls -lh coverage
+         echo "Showing first 20 lines of lcov.info"
+         cat coverage/lcov.info | head -n 20
+
 
       # Step 5: Run SonarQube Scanner
       - name: Run SonarQube Scanner
